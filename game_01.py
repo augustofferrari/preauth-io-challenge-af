@@ -1,5 +1,13 @@
-from itertools import combinations
 from typing import List
+
+
+def combinations_generator(elements: List[int], length: int):
+    for i in range(len(elements)):
+        if length == 1:
+            yield [elements[i], ]
+        else:
+            for next in combinations_generator(elements[i+1:len(elements)], length-1):
+                yield [elements[i], ] + next
 
 
 def get_subset_numbers(
@@ -24,13 +32,12 @@ def get_subset_numbers(
     if results == 0:
         return None
 
-    number_combinations = combinations(numbers, subset_size)
-    subsets = list(filter(lambda x: sum(x) == total, number_combinations))
+    result = []
+    for element in combinations_generator(numbers, subset_size):
+        if sum(element) == total:
+            result.append(element)
 
-    if not subsets:
-        return None
-
-    if results == 1:
-        return list(subsets[0])
-
-    return list(map(list, subsets[:results]))
+        if len(result) == results:
+            if results == 1:
+                return result[0]
+            return result
